@@ -1,0 +1,16 @@
+{
+	"apps": [
+		{ 
+			"name": "leeloo",
+			"script": "src/api/index.js"
+		},
+		{ 
+			"name": "leeloo-secret",
+			"script": "src/api/index.js",
+			"env": {
+				"WIKIROOT": "/home/bitnami/Dropbox/RPG Root/RPG_DM/_wiki",
+				"PORT": 3005
+			}
+		}
+	]
+}
