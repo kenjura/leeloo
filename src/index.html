@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Leeloo</title>
+        <link rel="stylesheet" href="/index.css" />
+
+        <link rel="stylesheet" href="/components/dropdown-menu.css" />
+        <link rel="stylesheet" href="/components/TopMenu.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.1.1/tocbot.css" />
+
+        <style is="site-style"></style>
+    </head>
+    <body>
+
+    	<top-menu></top-menu>
+		
+
+		<nav id="toc">toc</nav>
+
+		<routed-view pattern="/([^/]*)$">
+		  <article-view id="mainContent"></article-view>
+        </routed-view>
+
+        <routed-view pattern="/([^/]+)/edit">
+            <article-edit class="mainContent"></article-edit>
+        </routed-view>
+
+		<script type="module">
+            import ArticleView from '/components/ArticleView.js';
+			import ArticleEdit from '/components/ArticleEdit.js';
+            import SiteStyle from '/components/SiteStyle.js';
+            import TableOfContents from '/components/TableOfContents.js';
+			import TopMenu from '/components/TopMenu.js';
+            import Router from '/Router.js';
+		</script>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.1.1/tocbot.min.js"></script>
+    </body>
+</html>
+

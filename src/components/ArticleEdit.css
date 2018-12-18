@@ -1,0 +1,21 @@
+article-edit {
+	display: block;
+    height: calc(100vh - 92px);
+}
+
+article-edit .edit-controls {
+	height: 40px;
+    padding: 3px;
+    box-sizing: border-box;
+    text-align: right;
+}
+
+article-edit textarea {
+	background: rgba(0,0,0,0.75);
+    color: white;
+    display: block;
+    padding: 10px;
+    height: calc(100% - 40px);
+    box-sizing: border-box;
+    width: 100%;
+}

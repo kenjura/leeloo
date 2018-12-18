@@ -1,0 +1,29 @@
+{
+  "name": "leeloo",
+  "version": "0.0.1",
+  "description": "Flat-file CMS",
+  "main": "index.js",
+  "scripts": {
+    "debug": "nodemon --inspect src/api/index.js",
+    "start": "nodemon src/api/index.js",
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/kenjura/leeloo"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "debug": "^4.1.0",
+    "dotenv": "^6.1.0",
+    "express": "^4.16.4",
+    "express-history-api-fallback": "^2.2.1",
+    "lodash": "^4.17.11",
+    "markdown": "^0.5.0",
+    "semver": "^5.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.6"
+  }
+}
