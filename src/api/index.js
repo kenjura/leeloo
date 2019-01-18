@@ -2,10 +2,17 @@ require('dotenv').load({ path:'/etc/leeloo.env' });
 
 require('./version-check');
 
+// to-do: reconcile auth and user control with controllers/index
+const authCtrl = require('./controllers/authCtrl');
+const userCtrl = require('./controllers/userCtrl');
+
 const api = require('./controllers');
 const express = require('express');
 const fallback = require('express-history-api-fallback')
 const path = require('path');
+
+const addAuth = require('./helper/addAuth');
+const bindSession = require('./helper/bindSession');
 
 const app = express();
 const port = process.env.PORT || 3003;
@@ -15,6 +22,14 @@ const fileRoot = process.env.STATICFILE_ROOT || path.resolve(__dirname, '../../s
 app.use(require('body-parser').json());
 
 // console.log('__dirname=',__dirname);
+
+bindSession(app);
+addAuth(app);
+
+
+app.use('/', authCtrl);
+app.use('/', userCtrl);
+
 
 // api server
 app.use('/api', api);
@@ -32,6 +47,15 @@ app.use(function (err, req, res, next) {
 // }
 
 // console.log(`fileRoot=${fileRoot}`)
+
+
+
+
+
+
+
+
+
 
 // static file server for the app itself
 app.use(express.static(fileRoot));
