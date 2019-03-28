@@ -1,41 +1,48 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8"/>
-        <title>Leeloo</title>
-        <link rel="stylesheet" href="/index.css" />
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="theme-color" content="#000000" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>Leeloo CMS</title>
+
+        <!-- <link rel="stylesheet" href="/index.css" /> -->
 
         <link rel="stylesheet" href="/components/dropdown-menu.css" />
-        <link rel="stylesheet" href="/components/TopMenu.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.1.1/tocbot.css" />
 
-        <style is="site-style"></style>
-    </head>
-    <body>
 
-    	<top-menu></top-menu>
-		
 
-		<nav id="toc">toc</nav>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <div id="site-style"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
 
-		<routed-view pattern="/([^/]*)$">
-		  <article-view id="mainContent"></article-view>
-        </routed-view>
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
 
-        <routed-view pattern="/([^/]+)/edit">
-            <article-edit class="mainContent"></article-edit>
-        </routed-view>
-
-		<script type="module">
-            import ArticleView from '/components/ArticleView.js';
-			import ArticleEdit from '/components/ArticleEdit.js';
-            import SiteStyle from '/components/SiteStyle.js';
-            import TableOfContents from '/components/TableOfContents.js';
-			import TopMenu from '/components/TopMenu.js';
-            import Router from '/Router.js';
-		</script>
-
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.1.1/tocbot.min.js"></script>
-    </body>
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+    <script type="text/javascript" src="index.js"></script>
+<!-- 
+    <script type="module">
+      import SiteStyle from '/components/SiteStyle.js';
+    </script> -->
+  </body>
 </html>
-

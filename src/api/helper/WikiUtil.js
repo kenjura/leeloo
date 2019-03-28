@@ -1,5 +1,7 @@
-var _ = require('lodash');
-var WikiImage = require('./WikiImage.js');
+
+const debug = require('debug')('leeloo:WikiUtil');
+const _ = require('lodash');
+const WikiImage = require('./WikiImage.js');
 
 var instance = {}, imageroot = '';
 
@@ -28,7 +30,7 @@ var linkbase,article;
 
 function wikiToHtml(wikitext,articleName,args) {
 	// console.log('WikiUtil > wikiToHtml > articleName=', articleName);
-	// console.log('WikiUtil > wikiToHtml > args=', args);
+	debug('wikiToHtml > args=', args);
 	if (!args) args = { db:'noDB', noSection:true, noTOC:true };
 	if (!wikitext) return 'nothing to render';
 

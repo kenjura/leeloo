@@ -1,5 +1,6 @@
 // to-do: make this a DAO for local file system, then replace with locally-cached Dropbox proxy
 
+const debug = require('debug')('leeloo:articleModel');
 const fs = require('fs');
 const path = require('path');
 
@@ -11,12 +12,18 @@ const stat = promisify(fs.stat);
 module.exports = { get, put }
 
 async function get(virtualPath) {
-	const filePath = await resolveVirtualPath(virtualPath);
-	if (!filePath) return null;
-	const text = await read(filePath);
-	return {
-		filePath,
-		text,
+	try {
+		const filePath = await resolveVirtualPath(virtualPath);
+		debug(`get > filePath=${filePath}`);
+		if (!filePath) return {};
+		const text = await read(filePath);
+		return {
+			filePath,
+			text,
+		}
+	} catch (err) {
+		console.error('articleModel > get > ERROR:', err);
+		return {};
 	}
 }
 
@@ -36,16 +43,21 @@ async function resolveVirtualPath(virtualPath) { // to-do: move me into a helper
 	const docRoot = process.env.DOCROOT;
 	if (!docRoot) throw new Error('No docRoot, no articles, bub.');
 
-	return await attempt()
-		|| await attempt({ extension:'.html' })
-		|| await attempt({ extension:'.md' })
-		|| await attempt({ extension:'.css' })
-		|| await attempt({ extension:'.txt' })
-		|| await attempt({ extraPath:'_index.html' })
-		|| await attempt({ extraPath:'_index.md' })
-		|| await attempt({ extraPath:'_index.txt' })
-		|| await attempt({ extraPath:'_home.txt' }) // to-do: deprecate this
-		|| null;
+	try {
+		return await attempt()
+			|| await attempt({ extension:'.html' })
+			|| await attempt({ extension:'.md' })
+			|| await attempt({ extension:'.css' })
+			|| await attempt({ extension:'.txt' })
+			|| await attempt({ extraPath:'_index.html' })
+			|| await attempt({ extraPath:'_index.md' })
+			|| await attempt({ extraPath:'_index.txt' })
+			|| await attempt({ extraPath:'_home.txt' }) // to-do: deprecate this
+			|| null;
+	} catch(err) {
+		console.error('articleModel > resolveVirtualPath > ERROR:', err);
+		return null;
+	}
 
 	// // exact file
 	// if (exists(path.resolve(docRoot, path))) return path.resolve(docRoot, path);
@@ -63,7 +75,7 @@ async function resolveVirtualPath(virtualPath) { // to-do: move me into a helper
 	// return null;
 
 	async function attempt({ extension, extraPath }={}) {
-		// console.log(`attempt: extension=${extension}, extraPath=${extraPath}`);
+		debug(`attempt: extension=${extension}, extraPath=${extraPath}`);
 		const fullPath = path.resolve(docRoot, extension ? `${virtualPath}${extension}` : virtualPath, extraPath||'')
 		// console.log(`resolves to ${fullPath}`);
 		return await exists(fullPath);

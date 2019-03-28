@@ -1,18 +1,47 @@
 const article = require('../model/article');
 const debug = require('debug')('leeloo:articleCtrl');
+const dropbox = require('../services/dropbox');
 const express = require('express');
 
 const { render } = require('../helper/articleRenderer');
 
 const router = express.Router();
 
+router.get(/dropbox\/([^$/]+)(?:\/([^$]+))?/, async (req,res) => {
+	try {
+		const db = req.params[0];
+		const path = req.params[1];
+		debug(`articleCtrl > loading article from dropbox, where db="${db}" and path="${path}"`)
+		const article = await dropbox.getArticle(db, path);
+		res.send(article);
+	} catch(err) {
+		console.error(err);
+		res.send(err);
+	}
+});
 router.get(/\/(.*)/, async (req,res) => {
-	const articlePath = req.params[0];
-	const { filePath, text } = await article.get(articlePath);
-	if (!text) res.status(404).send('Article not found');
+	let result;
+	try {
+		const articlePath = req.params[0];
+		debug(`getting article with path ${articlePath}`);
+		result = await article.get(articlePath);
 
-	const rendered = render({ text, filePath, ...req.query });
-	res.send(rendered);
+		// debug(`filePath = ${filePath}, text.substr(0,50)= ${text.substr(0,50)}`);
+		if (!result.text) return res.status(404).send('Article not found');
+	} catch (err) {
+		console.error('articleCtrl > get > ERROR:', err);
+		res.send('ERROR');
+	}
+
+	const { filePath, text } = result;
+
+	try {
+		const rendered = render({ text, filePath, ...req.query });
+		res.send(rendered);
+	} catch (err) {
+		console.error('articleCtrl > get > ERROR:', err);
+		res.send('ERROR');
+	}
 });
 router.put(/\/(.*)/, async (req,res) => {
 	const articlePath = req.params[0];

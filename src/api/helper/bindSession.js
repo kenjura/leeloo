@@ -16,5 +16,4 @@ module.exports = function(app) {
   }
 
   app.use(session(sess));
-  console.log('SESSION IS BOUND');
 }
