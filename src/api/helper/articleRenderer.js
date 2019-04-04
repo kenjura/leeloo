@@ -1,4 +1,4 @@
-const markdown = require('markdown').markdown;
+const { markdown } = require('markdown');
 const { dirname, extname } = require('path');
 const { wikiToHtml } = require('./WikiUtil');
 

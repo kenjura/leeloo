@@ -17,9 +17,9 @@ export default class ArticleEdit extends React.Component {
 	}
 
 	componentDidMount() {
-		const { db, path } = this.props.match.params;
-		read(db, path)
-			.then(article => this.setState({ body:article.wikitext }));
+		// const { db, path } = this.props.match.params;
+		// read(db, path)
+		// 	.then(article => this.setState({ body:article.wikitext }));
 	}
 
 	handleChange(body) {

@@ -17,7 +17,7 @@ export default class SiteStyle extends React.Component {
 		const url = `/api/article/${db}/_style.leeloo?noTOC=true&noH1=true&noSection=true&db=${db}`;
 		const result = await fetch(url);
 		const json = await result.json();
-		const style = json.wikitext;
+		const style = json.content;
 
 		this.setState({ style });
 	}

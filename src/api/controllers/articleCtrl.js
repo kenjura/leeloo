@@ -7,42 +7,43 @@ const { render } = require('../helper/articleRenderer');
 
 const router = express.Router();
 
-router.get(/dropbox\/([^$/]+)(?:\/([^$]+))?/, async (req,res) => {
+router.get(/([^$/]+)(?:\/([^$]+))?/, async (req,res) => {
 	try {
 		const db = req.params[0];
-		const path = req.params[1];
+		const path = req.params[1] || '';
 		debug(`articleCtrl > loading article from dropbox, where db="${db}" and path="${path}"`)
 		const article = await dropbox.getArticle(db, path);
-		res.send(article);
+		if (!article) res.status(404).send(`Article "${db}/${path}" not found.`);
+		else res.send(article);
 	} catch(err) {
 		console.error(err);
 		res.send(err);
 	}
 });
-router.get(/\/(.*)/, async (req,res) => {
-	let result;
-	try {
-		const articlePath = req.params[0];
-		debug(`getting article with path ${articlePath}`);
-		result = await article.get(articlePath);
+// router.get(/\/(.*)/, async (req,res) => {
+// 	let result;
+// 	try {
+// 		const articlePath = req.params[0];
+// 		debug(`getting article with path ${articlePath}`);
+// 		result = await article.get(articlePath);
 
-		// debug(`filePath = ${filePath}, text.substr(0,50)= ${text.substr(0,50)}`);
-		if (!result.text) return res.status(404).send('Article not found');
-	} catch (err) {
-		console.error('articleCtrl > get > ERROR:', err);
-		res.send('ERROR');
-	}
+// 		// debug(`filePath = ${filePath}, text.substr(0,50)= ${text.substr(0,50)}`);
+// 		if (!result.text) return res.status(404).send('Article not found');
+// 	} catch (err) {
+// 		console.error('articleCtrl > get > ERROR:', err);
+// 		res.send('ERROR');
+// 	}
 
-	const { filePath, text } = result;
+// 	const { filePath, text } = result;
 
-	try {
-		const rendered = render({ text, filePath, ...req.query });
-		res.send(rendered);
-	} catch (err) {
-		console.error('articleCtrl > get > ERROR:', err);
-		res.send('ERROR');
-	}
-});
+// 	try {
+// 		const rendered = render({ text, filePath, ...req.query });
+// 		res.send(rendered);
+// 	} catch (err) {
+// 		console.error('articleCtrl > get > ERROR:', err);
+// 		res.send('ERROR');
+// 	}
+// });
 router.put(/\/(.*)/, async (req,res) => {
 	const articlePath = req.params[0];
 	debug(req.body);

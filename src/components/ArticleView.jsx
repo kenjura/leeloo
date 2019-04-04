@@ -2,7 +2,8 @@ import React from 'react';
 import State from '../State.js';
 
 import { Button } from 'antd';
-import { read } from '../services/articleService';
+import { read, render, renderTOC } from '../services/articleService';
+import { wikiToHtml } from '../api/helper/WikiUtil';
 
 import './ArticleView.scss';
 
@@ -23,9 +24,9 @@ export default class ArticleView extends React.Component {
 	}
 
 	componentDidMount() {
-		const { db, path } = this.props.match.params;
-		read(db, path || '_home')
-			.then(({ html, status, tocHtml, wikitext }) => this.setState({ html, status, tocHtml, wikitext }));
+		// const { db, path } = this.props.match.params;
+		// read(db, path || '_home')
+		// 	.then(({ html, status, tocHtml, wikitext }) => this.setState({ html, status, tocHtml, wikitext }));
 	}
 
 	handleEdit() {
@@ -48,19 +49,17 @@ export default class ArticleView extends React.Component {
 		  // Which headings to grab inside of the contentSelector element.
 		  headingSelector: 'h1, h2, h3',
 		});
-
-		// sectioning code - it worked last time I ran it
 		
 	}
 
 	render() {
-		const { html, tocHtml, status } = this.state;
+		const { article } = this.props;
+
+		const articleHtml = render(article);
+		const tocHtml = renderTOC(article);
+		const status = 200;
 
 		// setTimeout(() => sectionify(this.myRef.current));
-
-		const articleHtml = status == 404 && 'article not found'
-			|| status >= 400 && `unknown error ${status}`
-			|| html;
 
 		return <div id="article-view-container">
 			<nav id="toc" className="dropdown-menu" dangerouslySetInnerHTML={({ __html:tocHtml })} />
@@ -75,6 +74,32 @@ export default class ArticleView extends React.Component {
 	}
 }
 
+export class ArticleViewLoader extends React.Component {
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			article: {},
+			loading: true,
+		};
+	}
+
+	componentDidMount() {
+		this.populate();
+	}
+
+	async populate() {
+		const { location } = this.props;
+		this.setState({ loading:true });
+		const article = await read(location.pathname);
+		this.setState({ article, loading:false });
+	}
+
+	render() {
+		const { article } = this.state;
+		return <ArticleView article={article} />
+	}
+}
 
 
 
