@@ -4,7 +4,7 @@ const fetch = require('isomorphic-fetch');
 
 const { wrap } = require('../helper/cache');
 
-module.exports = { getArticle };
+module.exports = { getArticle, getFileList };
 
 // TODO: reconcile the collision of the various "path" variables
 // TODO: implement caching
@@ -27,20 +27,35 @@ async function getArticle(db, articlePath) {
 
 }
 
-// async function getFileList(db, dropbox) {
-// 	if (!dropbox) throw new Error('dropbox service > getFileList > initialized dropbox instance must be supplied.');
+async function getFileList(db) {
+	const dropbox = new Dropbox({ accessToken: process.env.DROPBOX_ACCESS_TOKEN, fetch: fetch });
+	debugger;
 
-// 	const path = `/${process.env.DROPBOX_ROOT}/${db}`;
-// 	const recursive = true;
+	const path = `/${process.env.DROPBOX_ROOT}/${db}`;
+	const recursive = true;
 
-// 	debug(`getFileList > attempting to load file list for db "${db}". path="${path}"`);
+	debug(`getFileList > attempting to load file list for db "${db}"`);
 
-// 	const response = await dropbox.filesListFolder({ path, recursive });
-// 	const { entries } = response;
-// 	const fileList = entries.map(entry => entry.path_lower);
-// 	debug('getFileList > fileList = ',fileList);
-// 	return fileList;
-// }
+	let cursor, has_more = true, requests = 0;
+	const fileList = [];
+	do {
+		const args = { path, recursive };
+		requests++;
+		debug(`getFileList > request #${requests}`);
+
+		let response;
+		if (cursor) response = await dropbox.filesListFolderContinue({ cursor });
+		else response = await dropbox.filesListFolder(args);
+
+		const { entries } = response;
+		cursor = response.cursor;
+		has_more = response.has_more;
+		fileList.push(...entries.map(entry => entry.path_lower));
+	} while(has_more && requests < 10);
+
+	debug('getFileList > fileList = ',fileList);
+	return fileList;
+}
 
 
 async function getFileByPath({ db, dropbox, articlePath }) {

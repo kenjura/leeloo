@@ -7,6 +7,16 @@ const { render } = require('../helper/articleRenderer');
 
 const router = express.Router();
 
+
+router.get('/file-list', async (req, res) => {
+	try {
+		const fileList = await dropbox.getFileList('/bertball');
+		res.send(fileList);
+	} catch(err) {
+		console.error(err);
+		res.status(500).send('unknown error');
+	}
+});
 router.get(/([^$/]+)(?:\/([^$]+))?/, async (req,res) => {
 	try {
 		const db = req.params[0];
