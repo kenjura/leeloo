@@ -59,7 +59,7 @@ export default class ArticleView extends React.Component {
 		const tocHtml = renderTOC(article);
 		const status = 200;
 
-		// setTimeout(() => sectionify(this.myRef.current));
+		setTimeout(() => sectionify(this.myRef.current));
 
 		return <div id="article-view-container">
 			<nav id="toc" className="dropdown-menu" dangerouslySetInnerHTML={({ __html:tocHtml })} />
@@ -103,25 +103,25 @@ export class ArticleViewLoader extends React.Component {
 
 
 
-// function sectionify(node) {
-// 	const elements = node.children;
-// 	let sections = [];
-// 	let currentSection = [];
-// 	for (let i = 0; i < elements.length; i++) {
-// 		let element = elements[i];
-// 		if (element.tagName === 'H1' && currentSection.length > 0) {
-// 			sections.push(currentSection.map(a=>a));
-// 			currentSection = [element];
-// 		} else {
-// 			currentSection.push(element);
-// 		}
-// 		if (i === elements.length - 1) sections.push(currentSection.map(a=>a));
-// 	};
-// 	node.innerHTML = '';
-// 	sections.forEach(section => {
-// 		let element = document.createElement('section');
-// 		element.className = 'sectionOuter';
-// 		section.forEach(e => element.appendChild(e));
-// 		node.appendChild(element);
-// 	})
-// }
+function sectionify(node) {
+	const elements = node.children;
+	let sections = [];
+	let currentSection = [];
+	for (let i = 0; i < elements.length; i++) {
+		let element = elements[i];
+		if (element.tagName === 'H1' && currentSection.length > 0) {
+			sections.push(currentSection.map(a=>a));
+			currentSection = [element];
+		} else {
+			currentSection.push(element);
+		}
+		if (i === elements.length - 1) sections.push(currentSection.map(a=>a));
+	};
+	node.innerHTML = '';
+	sections.forEach(section => {
+		let element = document.createElement('section');
+		element.className = 'sectionOuter';
+		section.forEach(e => element.appendChild(e));
+		node.appendChild(element);
+	})
+}

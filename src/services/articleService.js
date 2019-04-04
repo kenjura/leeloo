@@ -29,7 +29,7 @@ function render(article) {
 		return html;
 	}
 	function renderWiki(content) {
-		const wiki = wikiToHtml(content, 'articleName tbd', { noSection:false });
+		const wiki = wikiToHtml(content, 'articleName tbd', { noSection:true });
 		return wiki.html;
 	}
 }

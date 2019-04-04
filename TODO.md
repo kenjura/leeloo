@@ -3,15 +3,19 @@
 + [ ] restructure components so TopMenu can receiving route params
 + [ ] clean up TODO.md, organize first by milestone, then functional area (and remove stale TODOs)
 
+# Bundle optimization
++ [ ] Use remarkable for md parsing, replacing markdown
+
 # Dropbox integration
 + [ ] MVP
   + [x] Read files from Dropbox, not local file system
-  + [x] Maintain a local cache to avoid Dropbox hits (threshold one: do not hit Dropbox; threshold two: load from cache, then hit Dropbox; threshold three: go right to Dropbox)
+  + [x] Maintain a local cache to minimize Dropbox hits
   + [ ] Write to Dropbox
   + [ ] Get revision list, restore revision
   + [ ] Attribute edit to correct user (or at least annotate the edit somehow)
-+ [ ] Questions to resolve
-  + [ ] Should the request go through backend, or just go direct to Dropbox? 
++ [ ] v2
+  + [ ] Use an external cache that survives reboots and can scale (e.g. memcached, redis)
+  + [ ] Don't delete content from cache when it expires. Rather, show the stale content, notify user that it is stale and is being refreshed, then refresh
 
 # Architecture / Best Practices
 + [ ] Find a way to use /:db/:path/:action with paths containing slashes

@@ -1,6 +1,8 @@
 export { getTocFromMarkdown };
 
 function getTocFromMarkdown(input='', outputFormat='md') {
+	// WIP
+	
 	/*
 	# h1
 

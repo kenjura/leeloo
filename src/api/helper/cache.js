@@ -1,7 +1,7 @@
 const cache = require('memory-cache');
 const debug = require('debug')('leeloo:cache');
 
-const DEFAULT_TIMEOUT = 30 * 1000;
+const DEFAULT_TIMEOUT = 30 * 60 * 1000; // currently 30 minutes
 
 module.exports = { get, put, wrap };
 
@@ -19,7 +19,10 @@ function wrap(getterFn, keyFn) {
 		const storedValue = get(key);
 		if (storedValue) {
 			debug(`cache hit on key "${key}". returning stored value.`);
-			return storedValue;
+			return Object.assign({}, storedValue, { 
+				cacheExpires: storedValue.cacheTime + DEFAULT_TIMEOUT,
+				cacheTimeRemaining: (storedValue.cacheTime + DEFAULT_TIMEOUT) - Date.now(),
+			});
 		}
 
 		const result = await getterFn(...args);
