@@ -1,6 +1,7 @@
 require('dotenv').load({ path:'/etc/leeloo.env' });
 
 require('./version-check');
+require('./validate-env');
 
 // to-do: reconcile auth and user control with controllers/index
 const authCtrl = require('./controllers/authCtrl');
