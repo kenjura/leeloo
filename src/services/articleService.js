@@ -52,7 +52,7 @@ function renderTOC(article) {
 	}
 }
 
-async function update(db, path, body) {
-	console.log('updating...', { db, path, body });
+async function update(path, body) {
+	console.log('updating...', { path, body });
 	return { status:200 };
 }

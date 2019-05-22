@@ -18,6 +18,16 @@ function DbRoot(props) {
   return <ArticleView {...props} />
 }
 
+function Disambiguator(props) {
+  if (!props) throw new Error('Disambiguator > impossible error');
+  if (!props.match) throw new Error('Disambiguator > invalid props; "match" not found');
+  if (!props.match.params) throw new Error('Disambiguator > invalid props; "match.params" not found');
+  const { path } = props.match.params;
+  if (!path || typeof(path) !== 'string') throw new Error('Disambiguator > path is invalid');
+  if (path.includes('/edit')) return <ArticleEdit {...props} />; // todo: remove "/edit" from path
+  else return <ArticleViewLoader {...props} />; 
+}
+
 const AppRouter = () => (
   <Router>
     <div id="router-child">
@@ -29,8 +39,8 @@ const AppRouter = () => (
 
       {/*<div id="routed-path-container">*/}
         <Route path="/" exact component={Home} />
-        <Route exact path="/:db/:path([^$]+)/edit" render={props => <ArticleEdit {...props} />} />
-        <Route exact path="/:path+" render={props => { return <ArticleViewLoader {...props} foo="bar" />}} />
+        <Route exact path="/:db/:path([^$]+)/edit" render={props => <Disambiguator {...props} />} />
+        <Route exact path="/:path+" render={props => { return <Disambiguator {...props} foo="bar" />}} />
       {/*</div>*/}
 
       

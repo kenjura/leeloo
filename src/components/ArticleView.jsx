@@ -30,8 +30,9 @@ export default class ArticleView extends React.Component {
 	}
 
 	handleEdit() {
-		const { history, location } = this.props;
-		history.push(`${location.pathname}/edit`);
+		const { handleEdit } = this.props;
+		if (!handleEdit || typeof(handleEdit) !== 'function') throw new Error('articleView > handleEdit > props.handleEdit was not provided.');
+		else handleEdit();
 	}
 
 	async renderArticle(articlePath) {
@@ -82,10 +83,17 @@ export class ArticleViewLoader extends React.Component {
 			article: {},
 			loading: true,
 		};
+
+		this.handleEdit = this.handleEdit.bind(this);
 	}
 
 	componentDidMount() {
 		this.populate();
+	}
+
+	handleEdit() {
+		const { history, location } = this.props;
+		history.push(`${location.pathname}/edit`);
 	}
 
 	async populate() {
@@ -97,7 +105,7 @@ export class ArticleViewLoader extends React.Component {
 
 	render() {
 		const { article } = this.state;
-		return <ArticleView article={article} />
+		return <ArticleView article={article} handleEdit={this.handleEdit} />
 	}
 }
 

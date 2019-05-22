@@ -8,14 +8,20 @@
 
 # Dropbox integration
 + [ ] MVP
-  + [x] Read files from Dropbox, not local file system
-  + [x] Maintain a local cache to minimize Dropbox hits
-  + [ ] Write to Dropbox
-  + [ ] Get revision list, restore revision
-  + [ ] Attribute edit to correct user (or at least annotate the edit somehow)
+  + [ ] Dropbox API
+    + [x] Read files from Dropbox, not local file system
+    + [x] Maintain a local cache to minimize Dropbox hits
+    + [ ] Write to Dropbox
+  + [ ] Feature parity
+    + [ ] List all articles page
+    + [ ] Search for article (fileName only)
+    + [ ] Use article list to denote which links are alive or dead
 + [ ] v2
   + [ ] Use an external cache that survives reboots and can scale (e.g. memcached, redis)
   + [ ] Don't delete content from cache when it expires. Rather, show the stale content, notify user that it is stale and is being refreshed, then refresh
+  + [ ] Get revision list, restore revision
+  + [ ] Attribute edit to correct user (or at least annotate the edit somehow)
+  + [ ] App acts as a daemon, slowly building a complete copy of the wiki root on the local disk (or redis?), then uses webhooks to keep it current
 
 # Architecture / Best Practices
 + [ ] Find a way to use /:db/:path/:action with paths containing slashes
