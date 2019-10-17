@@ -3,11 +3,19 @@ import getDbFromPath from '../helpers/getDbFromPath';
 import { markdown } from 'markdown';
 import { wikiToHtml } from '../api/helper/WikiUtil';
 
-export { read, render, renderTOC, update };
+export { read, readFileList, render, renderTOC, update };
 
 
 async function read(path) {
 	const url = `/api/article/${path}`;
+	const result = await fetch(url);
+	if (result.status >= 400) return { status:result.status };
+	const json = await result.json();
+	return json;
+}
+
+async function readFileList(db) {
+	const url = `/api/article/${db}/file-list`;
 	const result = await fetch(url);
 	if (result.status >= 400) return { status:result.status };
 	const json = await result.json();

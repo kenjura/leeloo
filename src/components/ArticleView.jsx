@@ -54,13 +54,14 @@ export default class ArticleView extends React.Component {
 	}
 
 	render() {
-		const { article } = this.props;
+		const { article, fileList } = this.props;
 
 		const articleHtml = render(article);
 		const tocHtml = renderTOC(article);
 		const status = 200;
 
 		setTimeout(() => sectionify(this.myRef.current));
+		setTimeout(() => fileListIfy(this.myRef.current));
 
 		return <div id="article-view-container">
 			<nav id="toc" className="dropdown-menu" dangerouslySetInnerHTML={({ __html:tocHtml })} />
@@ -104,12 +105,19 @@ export class ArticleViewLoader extends React.Component {
 	}
 
 	render() {
+		const { fileList } = this.props;
 		const { article } = this.state;
-		return <ArticleView article={article} handleEdit={this.handleEdit} />
+		
+		return <ArticleView article={article} fileList={fileList} handleEdit={this.handleEdit} />
 	}
 }
 
 
+function fileListIfy(node) {
+	const links = node.querySelectorAll('a');
+	const activeLinks = links.filter(link => fileList.includes(link.getAttribute('href').toLowerCase()));
+	activeLinks.forEach(link => link.setAttribute('active','true'));
+}
 
 function sectionify(node) {
 	const elements = node.children;

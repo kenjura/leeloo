@@ -1,7 +1,7 @@
 const cache = require('memory-cache');
 const debug = require('debug')('leeloo:cache');
 
-const DEFAULT_TIMEOUT = 30 * 60 * 1000; // currently 30 minutes
+const DEFAULT_TIMEOUT = 5 * 60 * 1000; // currently 5 minutes
 
 module.exports = { get, put, wrap };
 
@@ -15,7 +15,7 @@ function put(key, value) {
 
 function wrap(getterFn, keyFn) {
 	return async function(...args) {
-		const key = keyFn(...args);
+		const key = typeof(keyFn) === 'string' ? key : keyFn(...args);
 		const storedValue = get(key);
 		if (storedValue) {
 			debug(`cache hit on key "${key}". returning stored value.`);

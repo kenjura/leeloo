@@ -8,9 +8,9 @@ const { render } = require('../helper/articleRenderer');
 const router = express.Router();
 
 
-router.get('/file-list', async (req, res) => {
+router.get('/:db/file-list', async (req, res) => {
 	try {
-		const fileList = await dropbox.getFileList('/bertball');
+		const fileList = await dropbox.getFileList(req.params.db);
 		res.send(fileList);
 	} catch(err) {
 		console.error(err);

@@ -2,7 +2,9 @@ const debug = require('debug')('leeloo:dropbox');
 const Dropbox = require('dropbox').Dropbox;
 const fetch = require('isomorphic-fetch');
 
-const { wrap } = require('../helper/cache');
+const { get, put, wrap } = require('../helper/cache');
+
+const MAX_SEQUENTIAL_REQUESTS = 10;
 
 module.exports = { getArticle, getFileList };
 
@@ -13,6 +15,8 @@ module.exports = { getArticle, getFileList };
 
 async function getArticle(db, articlePath) {
 	const dropbox = new Dropbox({ accessToken: process.env.DROPBOX_ACCESS_TOKEN, fetch: fetch });
+
+	debug(`getArticle > db=${db}, articlePath=${articlePath}`);
 
 	const gfbp = wrap(getFileByPath, ({ db, articlePath }) => `${db}/${articlePath}`);
 
@@ -28,8 +32,10 @@ async function getArticle(db, articlePath) {
 }
 
 async function getFileList(db) {
+	const cacheKey = `${db}:file-list`;
+	if (get(cacheKey)) return get(cacheKey);
+
 	const dropbox = new Dropbox({ accessToken: process.env.DROPBOX_ACCESS_TOKEN, fetch: fetch });
-	debugger;
 
 	const path = `/${process.env.DROPBOX_ROOT}/${db}`;
 	const recursive = true;
@@ -51,9 +57,16 @@ async function getFileList(db) {
 		cursor = response.cursor;
 		has_more = response.has_more;
 		fileList.push(...entries.map(entry => entry.path_lower));
-	} while(has_more && requests < 10);
+	} while(has_more && requests < MAX_SEQUENTIAL_REQUESTS);
 
+	// clean data
+	for (let i = 0; i < fileList.length; i++) {
+		fileList[i] = fileList[i].replace(`/${process.env.DROPBOX_ROOT.toLowerCase()}`, '');
+	}
+
+	// return
 	debug('getFileList > fileList = ',fileList);
+	put(cacheKey, fileList);
 	return fileList;
 }
 
@@ -66,6 +79,7 @@ async function getFileByPath({ db, dropbox, articlePath }) {
 	// check if the path is already a valid file or folder
 	let type;
 	const path = `/${process.env.DROPBOX_ROOT}/${db}/${articlePath}`.replace(/\/$/,'');
+	debug(`getFileByPath > final path to dropbox api: ${path}`);
 	try {
 		const metadata = await dropbox.filesGetMetadata({ path });
 		type = metadata['.tag'];
