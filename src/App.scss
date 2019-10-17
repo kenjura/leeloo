@@ -17,6 +17,24 @@ a {
 }
 
 
+article#mainContent, .mainContent {
+	a {
+		opacity: 0.6;
+	}
+	a[active="true"] {
+		opacity: 1.0;
+	}
+}
+#topnav {
+	a {
+		opacity: 0.6;
+	}
+	a[active="true"] {
+		opacity: 1.0;
+	}
+}
+
+
 #topnav {
 	background: #444;
 	box-sizing: border-box;
