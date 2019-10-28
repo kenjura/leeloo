@@ -31,9 +31,9 @@ async function getArticle(db, articlePath) {
 
 }
 
-async function getFileList(db) {
+async function getFileList(db, args={}) {
 	const cacheKey = `${db}:file-list`;
-	if (get(cacheKey)) return get(cacheKey);
+	if (get(cacheKey) && !args.noCache) return get(cacheKey);
 
 	const dropbox = new Dropbox({ accessToken: process.env.DROPBOX_ACCESS_TOKEN, fetch: fetch });
 

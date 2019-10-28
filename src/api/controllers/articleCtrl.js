@@ -3,14 +3,27 @@ const debug = require('debug')('leeloo:articleCtrl');
 const dropbox = require('../services/dropbox');
 const express = require('express');
 
+const { pick } = require('lodash');
 const { render } = require('../helper/articleRenderer');
 
 const router = express.Router();
 
 
+
+router.get('/file-list', async (req, res) => {
+	try {
+		const args = pick(req.query, [ 'noCache' ]);
+		const fileList = await dropbox.getFileList('', args);
+		res.send(fileList);
+	} catch(err) {
+		console.error(err);
+		res.status(500).send('unknown error');
+	}
+});
 router.get('/:db/file-list', async (req, res) => {
 	try {
-		const fileList = await dropbox.getFileList(req.params.db);
+		const args = pick(req.query, [ 'noCache' ]);
+		const fileList = await dropbox.getFileList(req.params.db, args);
 		res.send(fileList);
 	} catch(err) {
 		console.error(err);

@@ -6,6 +6,9 @@
 # Bundle optimization
 + [ ] Use remarkable for md parsing, replacing markdown
 
+# Good coding practices
++ [ ] Replace use of lodash.pick to sanitize API endpoint query params with a dedicated helper (that might not need lodash) that combines it with a static object and possibly runs sanitization on values
+
 # Dropbox integration
 + [ ] MVP
   + [ ] Dropbox API
