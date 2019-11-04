@@ -1,3 +1,14 @@
+# Current Objective: dropbox background sync
++ [ ] Main feature set
+  + [ ] Repo model provides a complete list of files in the repo, with their latest contents, and timestamps of most recent updates
+  + [ ] Cache service separate from repo keeps it cached out of process (i.e. redis)
+  + [ ] Sync job updates repo (rate limiting, health checks, etc)
++ [ ] Code cleanup
+  + [ ] Require node 10+
+  + [ ] Rewrite dropbox.js as an unopinionated dropbox service, then add an article service
+  + [ ] Clean up this document
+
+
 # More Immediate
 + [ ] clean up all CSS to a minimum of confusion (no more article, article-view, #mainContent, .mainContent hell)
 + [ ] restructure components so TopMenu can receiving route params

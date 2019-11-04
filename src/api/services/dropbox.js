@@ -6,19 +6,25 @@ const { get, put, wrap } = require('../helper/cache');
 
 const MAX_SEQUENTIAL_REQUESTS = 10;
 
-module.exports = { getArticle, getFileList };
+module.exports = { getArticle, getFileByPath, getFileList };
 
 // TODO: reconcile the collision of the various "path" variables
 // TODO: implement caching
 // TODO: apply order of preference for file types (or at least yell at the user for having duplicates)
 // TODO: do away with db and path, and just use location (maybe?)
 
-async function getArticle(db, articlePath) {
-	const dropbox = new Dropbox({ accessToken: process.env.DROPBOX_ACCESS_TOKEN, fetch: fetch });
+let dropbox = new Dropbox({ accessToken: process.env.DROPBOX_ACCESS_TOKEN, fetch: fetch }); // TODO: eliminate global variable
 
+
+async function getArticle(db, articlePath, args={}) {
 	debug(`getArticle > db=${db}, articlePath=${articlePath}`);
 
-	const gfbp = wrap(getFileByPath, ({ db, articlePath }) => `${db}/${articlePath}`);
+	if (args.noCache) {
+		return await getFileByPath({ db, dropbox, articlePath });
+	} else {
+		const key = db ? articlePath : `${db}/${articlePath}`;
+		const gfbp = wrap(getFileByPath, key);	
+	}
 
 	// const articlePromise = gfbp({ db, dropbox, articlePath });
 	// const menuPromise = gfbp({ db, dropbox, articlePath:'_menu' });
@@ -71,14 +77,17 @@ async function getFileList(db, args={}) {
 }
 
 
-async function getFileByPath({ db, dropbox, articlePath }) {
-	if (!dropbox) throw new Error('dropbox service > getFileByPath > initialized dropbox instance must be supplied.');
+async function getFileByPath({ db, articlePath }, args={}) {
+	// if (!dropbox) throw new Error('dropbox service > getFileByPath > initialized dropbox instance must be supplied.');
 
 	debug(`getFileByPath > attempting. db="${db}", articlePath="${articlePath}"`);
 
 	// check if the path is already a valid file or folder
 	let type;
-	const path = `/${process.env.DROPBOX_ROOT}/${db}/${articlePath}`.replace(/\/$/,'');
+	let path = db
+		? `/${process.env.DROPBOX_ROOT}/${db}/${articlePath}`.replace(/\/$/,'')
+		: `/${process.env.DROPBOX_ROOT}/${articlePath}`.replace(/\/$/,'')
+	path = path.replace(/\/\//g, '/');
 	debug(`getFileByPath > final path to dropbox api: ${path}`);
 	try {
 		const metadata = await dropbox.filesGetMetadata({ path });
@@ -88,9 +97,14 @@ async function getFileByPath({ db, dropbox, articlePath }) {
 		if (err.error && !err.error.error_summary.includes('path/not_found/')) throw err;
 		type = 'not_found';
 	}
-	if (type === 'file') return await getFile({ dropbox, path }); 
-	if (type === 'folder') return await getIndex({ dropbox, path });
-	if (type === 'not_found') return await searchForFile({ dropbox, path });
+	if (args.filesOnly) {
+		if (type === 'file') return await getFile({ path }, { transform:content => ({ content, type:'file' }) });
+		if (type === 'folder') return { type:'folder' };
+	} else {
+		if (type === 'file') return await getFile({ path });
+		if (type === 'folder') return await getIndex({ dropbox, path });
+		if (type === 'not_found') return await searchForFile({ dropbox, path });	
+	}
 
 	return null;
 	// match 2: file matching path with .html, .txt, or .md added
@@ -101,12 +115,15 @@ async function getFileByPath({ db, dropbox, articlePath }) {
 
 	// match 3: file matching path with /(_home|index).(html|txt|md)
 
-	async function getFile({ dropbox, path }) {
+	async function getFile({ path }, args={}) {
+		debug('getFile: ', path);
 		const response = await dropbox.filesDownload({ path });
 		const fileContent = response.fileBinary.toString('utf8');
-		return fileContent;
+		if (typeof(args.transform)==='function') return args.transform(fileContent);
+		else return fileContent;
 	}
 	async function getIndex({ dropbox, path }) {
+		debug('getIndex: ', path);
 		const indexPaths = await search({ dropbox, path, query:'index' });
 		if (indexPaths !== null) return await chooseAndDownload({ dropbox, paths:indexPaths });
 
@@ -142,6 +159,7 @@ async function getFileByPath({ db, dropbox, articlePath }) {
 		return matches.length ? matches : null;
 	}
 	async function searchForFile({ dropbox, path }) {
+		debug('searchForFile: ', path);
 		const query = path.substr(path.lastIndexOf('/') + 1); // TODO: account for paths in the form /foo/bar/baz/ (trailing slash falsely indicating folder when really baz is a file) (not sure if this ever happens)
 		const paths = await search({
 			dropbox,

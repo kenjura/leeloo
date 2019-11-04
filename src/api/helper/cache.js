@@ -15,7 +15,7 @@ function put(key, value) {
 
 function wrap(getterFn, keyFn) {
 	return async function(...args) {
-		const key = typeof(keyFn) === 'string' ? key : keyFn(...args);
+		const key = typeof(keyFn) === 'string' ? keyFn : keyFn(...args);
 		const storedValue = get(key);
 		if (storedValue) {
 			debug(`cache hit on key "${key}". returning stored value.`);

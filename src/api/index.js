@@ -15,6 +15,9 @@ const path = require('path');
 const addAuth = require('./helper/addAuth');
 const bindSession = require('./helper/bindSession');
 
+const startDropboxSync = require('../jobs/dropboxSync').start;
+const startRedis = require('./services/redis').start;
+
 const app = express();
 const port = process.env.PORT || 3003;
 const fileRoot = process.env.STATICFILE_ROOT || path.resolve(__dirname, '../../src');
@@ -73,3 +76,9 @@ app.use(fallback('index.html', { root:fileRoot }))
 
 app.listen(port, () => console.log(`API listening on port ${port}`));
 
+
+// start background sync
+(async function() {
+	await startRedis();
+	startDropboxSync();
+})()
