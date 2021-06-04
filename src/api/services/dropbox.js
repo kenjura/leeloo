@@ -19,11 +19,13 @@ let dropbox = new Dropbox({ accessToken: process.env.DROPBOX_ACCESS_TOKEN, fetch
 async function getArticle(db, articlePath, args={}) {
 	debug(`getArticle > db=${db}, articlePath=${articlePath}`);
 
+	let key, gfbp;
+
 	if (args.noCache) {
 		return await getFileByPath({ db, dropbox, articlePath });
 	} else {
-		const key = db ? articlePath : `${db}/${articlePath}`;
-		const gfbp = wrap(getFileByPath, key);	
+		key = db ? articlePath : `${db}/${articlePath}`;
+		gfbp = wrap(getFileByPath, key);	
 	}
 
 	// const articlePromise = gfbp({ db, dropbox, articlePath });

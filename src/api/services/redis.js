@@ -25,7 +25,7 @@ function set(key, val) {
 function start() {
 	return new Promise((resolve, reject) => {
 		debug('creating redis client...');
-		client = redis.createClient();
+		client = redis.createClient(REDIS_URL);
 		client.on('error', err => {
 			reject(err);
 		});

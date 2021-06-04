@@ -110,6 +110,10 @@ function pulse() {
 }
 
 async function updateFileList() {
+	if (state.fileList.failed) {
+		debug('fileList failed to load! aborting doomed load.');
+		return;
+	}
 	if (state.fileList.loading) {
 		debug('fileList already loading! aborting redundant load.');
 		return;
@@ -117,11 +121,16 @@ async function updateFileList() {
 
 	debug('updating fileList');
 	state.fileList.loading = true;
-	const fileList = await getFileList('leeloo-test', { noCache:true });
-	state.fileList = fileList;
-	state.fileList.loading = false;
-	state.fileList.timestamp = Date.now();
-	debug('done updating fileList');
+	try {
+		const fileList = await getFileList('leeloo-test', { noCache:true });
+		state.fileList = fileList;
+		state.fileList.loading = false;
+		state.fileList.timestamp = Date.now();
+		debug('done updating fileList');
+	} catch(err) {
+		state.fileList = { loading:false, failed: true, err };
+		console.error('dropboxSync > updateFileList > fatal error: ', err);
+	}
 }
 
 const UPDATE_FILE_THROTTLE_DELAY = 500;

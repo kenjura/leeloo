@@ -1,0 +1,26 @@
+redis:
+  image: redis
+  container_name: cache
+  expose:
+    - 6379
+app:
+  build: ./
+  volumes:
+    - ./:/var/www/app
+  links:
+    - redis
+  ports:
+    - 3000:3000
+  environment:
+    - REDIS_URL=redis://cache
+    - NODE_ENV=development
+    - PORT=3000
+    - DOCROOT=/Users/somerando/Dropbox/wiki
+    - AUTH0_DOMAIN=yoursite.auth0.com
+    - AUTH0_CLIENT_ID=iC7836PMbjMsYp0IvBUwnXshmVus37cu
+    - AUTH0_CLIENT_SECRET=X9_ISuJJBkqAhdVTc5PZkVWG4x91BWDRChnRCm00w8xN8SLwf6OJ_w5CtpUA2KiF
+    - DROPBOX_ACCESS_TOKEN=9vsvIRG_JW4AAAAAAAAAAW9hS847NtEuNP_pHHljMUCXJ9fhQA4nRUyjClbVBW3r
+    - DROPBOX_ROOT=RPG Root/RPG/wiki
+    - DEBUG=leeloo
+  command:
+    sh -c 'npm i && npm start'
